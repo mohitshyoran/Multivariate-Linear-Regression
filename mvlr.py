@@ -25,6 +25,22 @@ def gradientDescent(X,y,theta,iters,alpha):
 #To do: function to return training X training Y test X and test Y
 #Use the 'extracting' lines of code and make changes
 def getTrainingTest(my_data):
+    X = my_data.iloc[:,0:len(my_data.columns)-1]
+
+    ones = np.ones([X.shape[0],1])
+    X = np.concatenate((ones,X),axis=1)
+    X = np.array(X, dtype=np.object_)
+    
+    y = my_data.iloc[:,len(my_data.columns)-1:len(my_data.columns)]
+    y = np.array(y, dtype=np.object_)
+    
+    itrain = round(len(X)*0.8)
+    
+    trainX = X[0:itrain,:]
+    testX = X[itrain+1:,:]
+    
+    trainY = y[0:itrain,:]
+    testY = y[itrain+1:,:]
 
     return trainX, trainY, testX, testY
 
