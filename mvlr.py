@@ -22,8 +22,7 @@ def gradientDescent(X,y,theta,iters,alpha):
         
     return cost,theta
 
-#To do: function to return training X training Y test X and test Y
-#Use the 'extracting' lines of code and make changes
+#function to split input data and return training X training Y test X and test Y
 def getTrainingTest(my_data):
     X = my_data.iloc[:,0:len(my_data.columns)-1]
 
