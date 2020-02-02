@@ -32,6 +32,7 @@ def getTrainingTest(my_data):
     y = my_data['price']
     
     trainX,testX,trainY,testY = train_test_split(x,y,test_size = 0.2)
+    from sklearn.linear_model import LinearRegression
     clf = LinearRegression()
 
     return trainX, trainY, testX, testY
