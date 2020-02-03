@@ -132,4 +132,4 @@ for lamda in lamdas:
 plt.xlabel('Iterations')  
 plt.ylabel('Cost') 
 plt.legend()
-plt.show()
+plt.savefig('Cost_vs_iters.png')
