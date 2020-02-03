@@ -104,6 +104,8 @@ theta = np.zeros([1,trainX.shape[1]],dtype=np.object_)
 iters = 1000
 
 ALPHA = [0.0001,0.001,0.01,0.1]
+minerr = 999
+optalpha = 0
 for alpha in ALPHA:
     theta = np.zeros([1,trainX.shape[1]],dtype=np.object_)
     cost,thita = gradientDescent(trainX,trainY,theta,iters,alpha)
@@ -114,14 +116,18 @@ for alpha in ALPHA:
 
     print("For alpha = ",alpha)
     print("Theta : ",thita)
-    print("RMSE = ",getError(prY,testY))
+    err = getError(prY,testY)
+    if err < minerr:
+        minerr = err
+        optalpha = alpha
+    print("RMSE = ",err)
 
 print("\n")
 
 lamdas = [0,1,10,100]
 
 for lamda in lamdas:
-    c,g = gdRegularized(trainX,trainY,theta,iters,alpha,lamda)
+    c,g = gdRegularized(trainX,trainY,theta,iters,optalpha,lamda)
 
     prY1 = predict(testX,g)
 
@@ -129,6 +135,7 @@ for lamda in lamdas:
     print("Theta : ",g)
     print("Error = ",getError(prY1,testY))
 
+plt.title('Variation of Cost with iterations for different values of alpha')
 plt.xlabel('Iterations')  
 plt.ylabel('Cost') 
 plt.legend()
