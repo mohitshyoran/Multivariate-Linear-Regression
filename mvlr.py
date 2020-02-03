@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import sys
 import matplotlib.pyplot as plt
 
 #function to compute Cost given X (input data) y (output data) and theta
@@ -44,55 +45,91 @@ def getTrainingTest(my_data):
     return trainX, trainY, testX, testY
 
 #To do: function to calculate root mean square error for accuracy of model
-def getAccuracy(X,y,theta):
-
+def getError(py,y):
+    d = py-y
+    s = d.T @ d 
+    error = np.sqrt(s[0,0])
     return error
 
-#To do: function to do Gradient Descent with Regularization
-def gdRegularized(X,y,theta,iters,alpha):
+def costreg(X,y,theta,lamda):
+    cost = computeCost(X,y,theta)
+    th = theta[:,1:theta.shape[1]]
+    th = lamda*th*th
+    ones = np.ones(th.shape[1])
+    term = th @ ones.T
+    cost = cost + term
 
+    return cost
+
+#To do: function to do Gradient Descent with Regularization
+def gdRegularized(X,y,theta,iters,alpha,lamda):
+    cost = np.zeros(iters)
+    term = 1 - lamda*(alpha/len(X))
+    o = np.ones(theta.shape[1]-1)*term
+    a = np.ones(1)
+    M = np.concatenate((a,o),axis=0)
+    
+    for i in range(iters):
+        h = X @ theta.T
+        temp = h-y
+        S = X.T @ temp
+        S = (alpha/len(X))*S
+        theta = theta * M
+        theta = theta - S.T
+        c = costreg(X,y,theta,lamda)
+        cost[i] = c
+    
     return cost,theta
 
+def predict(X,theta):
+    py = X @ theta.T
+    return py
 
-#To do: get filename as argument from command line and replace 'home.txt'
-my_data = pd.read_csv('home.txt',names=["size","bedroom","price"])
+if len(sys.argv) < 2:
+    print("usage python3 mvlr (filename)")
+    sys.exit()
+f = open('output.txt','w')
+sys.stdout = f
+
+filename = sys.argv[1]
+my_data = pd.read_csv(filename)
 
 my_data = (my_data - my_data.mean())/my_data.std()  #Normalizing the data
 my_data.head()
 
-#extracting the features in array X. T
-#To do: change the '2' to accomodate as many features(columns) as the input data has.
-#Code should work for any size of input (any input file). Presently only in home.txt only 2 features.
-X = my_data.iloc[:,0:2]                             
+trainX, trainY, testX, testY = getTrainingTest(my_data)
+testY
+theta = np.zeros([1,trainX.shape[1]],dtype=np.object_)
 
-ones = np.ones([X.shape[0],1])
-X = np.concatenate((ones,X),axis=1)                 #setting X[:,0] as 1's
-#print(X)
-#print(len(X))
-
-#extracting predicted outputs
-#To do: change the '2:3' to the last column of data (Generalized code).
-y = my_data.iloc[:,2:3]                             
-
-theta = np.zeros([1,3])                             #initializing theta values as zeroes 
-
-alpha = 0.01
 iters = 1000
-#print(y)
 
+ALPHA = [0.0001,0.001,0.01,0.1]
+for alpha in ALPHA:
+    theta = np.zeros([1,trainX.shape[1]],dtype=np.object_)
+    cost,thita = gradientDescent(trainX,trainY,theta,iters,alpha)
+    I=[i for i in range(iters)]
+    plt.plot(I,cost,label=alpha)
+    
+    prY = predict(testX,thita)
 
+    print("For alpha = ",alpha)
+    print("Theta : ",thita)
+    print("RMSE = ",getError(prY,testY))
 
-print(computeCost(X,y,theta))
+print("\n")
 
+lamdas = [0,1,10,100]
 
+for lamda in lamdas:
+    c,g = gdRegularized(trainX,trainY,theta,iters,alpha,lamda)
 
-g,thita = gradientDescent(X,y,theta,iters,alpha)
+    prY1 = predict(testX,g)
 
-c = computeCost(X,y,thita)
-print("Final cost ",c)
+    print("After regularization with lamda = ",lamda)
+    print("Theta : ",g)
+    print("Error = ",getError(prY1,testY))
 
-fig, ax = plt.subplots()  
-ax.plot(np.arange(iters), g, 'r')  
-ax.set_xlabel('Iterations')  
-ax.set_ylabel('Cost')  
-ax.set_title('Error vs. Training Epoch') 
+plt.xlabel('Iterations')  
+plt.ylabel('Cost') 
+plt.legend()
+plt.show()
