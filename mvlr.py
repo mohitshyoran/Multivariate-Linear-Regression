@@ -2,8 +2,6 @@ import numpy as np
 import pandas as pd
 import sys
 import matplotlib.pyplot as plt
-%matplotlib inline
-from sklearn.model_selection import train_test_split #getTrainingTest(my_data)
 
 #function to compute Cost given X (input data) y (output data) and theta
 def computeCost(X,y,theta):
@@ -27,7 +25,6 @@ def gradientDescent(X,y,theta,iters,alpha):
 
 #function to split input data and return training X training Y test X and test Y
 def getTrainingTest(my_data):
-<<<<<<< HEAD
     X = my_data.iloc[:,0:len(my_data.columns)-1]
 
     ones = np.ones([X.shape[0],1])
@@ -44,15 +41,6 @@ def getTrainingTest(my_data):
     
     trainY = y[0:itrain,:]
     testY = y[itrain+1:,:]
-=======
-    #my_data = pd.read_csv('home.txt',names=["size","bedroom","price"])
-    x = my_data[['size','bedroom']]
-    y = my_data['price']
-    
-    trainX,testX,trainY,testY = train_test_split(x,y,test_size = 0.2)
-    from sklearn.linear_model import LinearRegression
-    clf = LinearRegression()
->>>>>>> cb4bedab67b87a936df1a2dffe0f9bf5b9d9e395
 
     return trainX, trainY, testX, testY
 
@@ -141,15 +129,7 @@ for lamda in lamdas:
     print("Theta : ",g)
     print("Error = ",getError(prY1,testY))
 
-<<<<<<< HEAD
 plt.xlabel('Iterations')  
 plt.ylabel('Cost') 
 plt.legend()
 plt.show()
-=======
-fig, ax = plt.subplots()  
-ax.plot(np.arange(iters), g, 'r')  
-ax.set_xlabel('Iterations')  
-ax.set_ylabel('Cost')  
-ax.set_title('Error vs. Training Epoch') 
->>>>>>> cb4bedab67b87a936df1a2dffe0f9bf5b9d9e395
